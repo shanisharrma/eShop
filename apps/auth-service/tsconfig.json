@@ -4,6 +4,15 @@
   "include": [],
   "references": [
     {
+      "path": "../../packages/middlewares"
+    },
+    {
+      "path": "../../packages/shared-types"
+    },
+    {
+      "path": "../../packages/utils"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

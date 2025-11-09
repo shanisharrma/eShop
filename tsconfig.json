@@ -8,6 +8,21 @@
     },
     {
       "path": "./apps/auth-service"
+    },
+    {
+      "path": "./apps/api-gateway-e2e"
+    },
+    {
+      "path": "./apps/api-gateway"
+    },
+    {
+      "path": "./packages/middlewares"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/shared-types"
     }
   ]
 }
