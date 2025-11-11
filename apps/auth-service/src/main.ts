@@ -1,11 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-// import swaggerUi from "swagger-ui-express";
 import { errorMiddleware } from "@eshop/middlewares";
-import authRoutes from "./routes/auth.router";
-import { mongoConnect } from "@eshop/utils";
-// const swaggerDocument = require("./swagger-output.json");
+import { mongoConnect, setupSwagger } from "@eshop/utils";
+import authRoutes from "./routes/auth.route";
 
 const host = process.env.HOST ?? "localhost";
 const port = process.env.PORT ? Number(process.env.PORT) : 6001;
@@ -27,11 +25,8 @@ app.get("/", (req, res) => {
   res.send({ message: "Smash my face if I sleep" });
 });
 
-// // Swagger-UI API Docs
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// app.get("docs-json", (req, res) => {
-//   res.json(swaggerDocument);
-// });
+// Swagger setup
+setupSwagger(app, "auth-service");
 
 // Routes
 app.use("/api", authRoutes);

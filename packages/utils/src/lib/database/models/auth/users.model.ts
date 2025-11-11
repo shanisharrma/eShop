@@ -29,12 +29,6 @@ const userSchema: Schema = new Schema(
       ref: "Image",
       default: null,
     },
-    imageId: {
-      type: Types.ObjectId,
-      ref: "Image",
-      required: true,
-      default: null,
-    },
   },
   {
     timestamps: true,
