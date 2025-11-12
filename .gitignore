@@ -49,3 +49,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 .env
+
+# Next.js
+.next
+out

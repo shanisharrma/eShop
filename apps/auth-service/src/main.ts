@@ -34,6 +34,7 @@ app.use("/api", authRoutes);
 app.use(errorMiddleware);
 
 const server = app.listen(port, host, async () => {
+
   await mongoConnect();
 
   console.log(`[ ready ] Auth Service is running in http://${host}:${port}`);

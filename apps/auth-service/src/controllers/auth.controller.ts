@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import {
   checkOTPRestrictions,
   sendOTP,
@@ -126,8 +126,6 @@ export const loginUser = async (
 
     const user = await UserModel.findOne({ email: email });
 
-    console.log("user: ", user);
-
     if (!user) return next(new AuthError("User doesn't exists!"));
 
     // verify Password
@@ -161,6 +159,60 @@ export const loginUser = async (
   }
 };
 
+// Refresh Token user
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+
+    if (!refreshToken) {
+      throw new AuthError("Unauthorized! No Refresh Token!")
+    }
+
+    const decoded =  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as unknown as { id: string; role: string };
+
+    if (!decoded || !decoded.id || !decoded.role) {
+      return new JsonWebTokenError("Forbidded! Invalid refresh Token!");
+    }
+
+    let account;
+    if (decoded.role === "user") {
+      account = await UserModel.findById(decoded.id);
+
+      if (!account) {
+        throw new AuthError("Forbidden! User Not Found!")
+      }
+
+      const newAccessToken = jwt.sign(
+        { id: decoded.id, role: decoded.role },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "15m" },
+      );
+
+      setCookie(res, "access_token", newAccessToken);
+    }
+
+    return res.status(201).json({ success: true });
+
+  } catch (error) {
+    console.log("Error password reset User:", error);
+    return next(error);
+  }
+}
+
+// Get logged in user info
+export const getUser = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    res.status(201).json({
+      success: true,
+      user
+    })
+  } catch (error) {
+    console.log("Error password reset User:", error);
+    return next(error);
+  }
+}
+
 // User Forgot Password
 export const userForgotPassword = async (
   req: Request,
@@ -181,7 +233,7 @@ export const userForgotPassword = async (
     await trackOTPRequests(email, next);
 
     // Generate OTP and send Email
-    await sendOTP(email, user.name as string, "forgot-password-user-mail");
+    await sendOTP(user.name as string, email,  "forgot-password-user-mail");
 
     res.status(200).json({
       success: true,
